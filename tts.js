@@ -1,3 +1,5 @@
+import { Overlayer } from './overlayer.js';
+
 const NS = {
     XML: 'http://www.w3.org/XML/1998/namespace',
     SSML: 'http://www.w3.org/2001/10/synthesis',
@@ -274,5 +276,57 @@ export class TTS {
             this.#lastMark = mark
             this.highlight(range.cloneRange())
         }
+    }
+    setHighlightWords(mark, { charIndex, charLength, plainText }) {
+      const range = this.#ranges.get(mark);
+      if (range) {
+        if (charIndex === -1) {
+          return;
+        }
+        try {
+          const subRange = document.createRange();
+          //startContainer和endContainer是同一节点，且该节点为文本节点时，进行语音文本(plainText)和全量文本的下标对齐
+          if (range.startContainer === range.endContainer && range.commonAncestorContainer.nodeType === 3) {
+            const allText = range.startContainer.textContent;
+            const voiceTextOffset = allText.indexOf(plainText);
+            subRange.setStart(range.startContainer, voiceTextOffset + charIndex);
+            subRange.setEnd(range.startContainer, voiceTextOffset + charIndex + charLength);
+          }
+
+          //console.log(plainText.slice(charIndex, charIndex + charLength));
+          //console.log(subRange.toString());
+
+          if (plainText.slice(charIndex, charIndex + charLength) !== subRange.toString()) {
+            debugger;
+          }
+
+          //console.log(charIndex, charLength, plainText);
+          //console.log(range, range.startOffset + charIndex, Math.min(range.startOffset + charIndex + charLength, range.endOffset))
+
+          const rect = subRange.getBoundingClientRect();
+          const rectRelativeX = rect.left;
+          const rectRelativeY = rect.top;
+          const highlightRect = {
+            left: rectRelativeX,
+            top: rectRelativeY,
+            width: rect.width,
+            height: rect.height
+          };
+          let svgLayer = this.doc.getElementById("highlight-svg-layer");
+          if (!svgLayer) {
+            const parser = new DOMParser();
+            svgLayer = parser.parseFromString('<svg id="highlight-svg-layer" style="position:absolute;width:100%;height:100%;top:0;left:0;z-index:-1;max-height: 100% !important;"></svg>', 'text/html').body.children[0];
+            this.doc.body.appendChild(svgLayer);
+          }
+          const highlighter = Overlayer.highlight([highlightRect]);
+          svgLayer.appendChild(highlighter);
+          return () => {
+            highlighter?.remove();
+          }
+        } catch (e) {
+          console.log(e);
+          debugger;
+        }
+      }
     }
 }
