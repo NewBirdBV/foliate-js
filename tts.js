@@ -315,9 +315,10 @@ export class TTS {
           let svgLayer = this.doc.getElementById("highlight-svg-layer");
           if (!svgLayer) {
             const parser = new DOMParser();
-            svgLayer = parser.parseFromString('<svg id="highlight-svg-layer" style="position:absolute;width:100%;height:100%;top:0;left:0;z-index:-1;max-height: 100% !important;"></svg>', 'text/html').body.children[0];
+            svgLayer = parser.parseFromString('<svg id="highlight-svg-layer" style="position:absolute;width:100%;height:100%;top:0;left:0;z-index:-1;"></svg>', 'text/html').body.children[0];
             this.doc.body.appendChild(svgLayer);
           }
+          svgLayer.style.maxHeight = '100% !important;';
           const highlighter = Overlayer.highlight([highlightRect]);
           svgLayer.appendChild(highlighter);
           return () => {
@@ -325,7 +326,6 @@ export class TTS {
           }
         } catch (e) {
           console.log(e);
-          debugger;
         }
       }
     }
