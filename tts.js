@@ -291,18 +291,21 @@ export class TTS {
             const voiceTextOffset = allText.indexOf(plainText);
             subRange.setStart(range.startContainer, voiceTextOffset + charIndex);
             subRange.setEnd(range.startContainer, voiceTextOffset + charIndex + charLength);
+          } else if (
+            //Fixme 暂时保持和上面一致
+            range.startContainer !== range.endContainer &&
+            range.startContainer.nodeType === 3 &&
+            range.endContainer.nodeType === 3 &&
+            range.endContainer.textContent === '\n'
+          ) {
+            const allText = range.startContainer.textContent;
+            const voiceTextOffset = allText.indexOf(plainText);
+            subRange.setStart(range.startContainer, voiceTextOffset + charIndex);
+            subRange.setEnd(range.startContainer, voiceTextOffset + charIndex + charLength);
           }
-
-          //console.log(plainText.slice(charIndex, charIndex + charLength));
-          //console.log(subRange.toString());
-
           if (plainText.slice(charIndex, charIndex + charLength) !== subRange.toString()) {
             debugger;
           }
-
-          //console.log(charIndex, charLength, plainText);
-          //console.log(range, range.startOffset + charIndex, Math.min(range.startOffset + charIndex + charLength, range.endOffset))
-
           const rect = subRange.getBoundingClientRect();
           const rectRelativeX = rect.left;
           const rectRelativeY = rect.top;
