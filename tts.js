@@ -322,7 +322,7 @@ export class TTS {
             this.doc.body.appendChild(svgLayer);
           }
           svgLayer.style.maxHeight = '100% !important;';
-          const highlighter = Overlayer.highlight([highlightRect]);
+          const highlighter = Overlayer.highlight([highlightRect], { color: 'rgba(135,49,255)'});
           svgLayer.appendChild(highlighter);
           return () => {
             highlighter?.remove();
