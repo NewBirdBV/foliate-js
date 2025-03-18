@@ -304,7 +304,7 @@ export class TTS {
             subRange.setEnd(range.startContainer, voiceTextOffset + charIndex + charLength);
           }
           if (plainText.slice(charIndex, charIndex + charLength) !== subRange.toString()) {
-            debugger;
+            console.log(plainText.slice(charIndex, charIndex + charLength), subRange);
           }
           const rect = subRange.getBoundingClientRect();
           const rectRelativeX = rect.left;
